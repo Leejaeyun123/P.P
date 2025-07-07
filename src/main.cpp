@@ -1,3 +1,5 @@
+// ESP8266 클라이언트 코드 (Arduino 코드)
+
 #include <Arduino.h>              // 아두이노 프레임워크 기본 함수 사용을 위한 헤더
 #include <DHT.h>                  // 온습도 센서 DHT11을 제어하기 위한 라이브러리
 #include <Wire.h>                 // I2C 통신용 기본 라이브러리
@@ -17,7 +19,7 @@ const char* password = "turtlebot3"; // 연결할 WiFi 비밀번호
 const char* server_ip = "192.168.0.97"; // TCP 서버의 IP 주소 (리눅스 PC)
 const uint16_t server_port = 8889;       // TCP 서버에서 열어둔 포트 번호
 
-WiFiClient client;                 // TCP 연결을 위한 클라이언트 객체
+WiFiClient client;                 // TCP 연결을 위한 클라이언트 객체 생성
 
 void setup() {
   Serial.begin(115200);           // 시리얼 통신 시작 (디버깅용)
@@ -26,9 +28,9 @@ void setup() {
   lcd.backlight();                // LCD 백라이트 켜기
 
   lcd.setCursor(0, 0);            // LCD 첫 줄 첫 번째 칸으로 커서 이동
-  lcd.print("WiFi 연결 중...");   // LCD에 WiFi 연결 메시지 출력
+  lcd.print("WiFi 연결 중...");    // LCD에 WiFi 연결 메시지 출력
 
-  WiFi.begin(ssid, password);     // WiFi 연결 시작
+  WiFi.begin(ssid, password);     // WiFi 연결 시도
 
   // WiFi 연결될 때까지 반복 확인
   while (WiFi.status() != WL_CONNECTED) {
@@ -37,10 +39,10 @@ void setup() {
   }
 
   lcd.clear();                    // LCD 화면 초기화
-  lcd.setCursor(0, 0);
-  lcd.print("WiFi 연결 완료");    // 연결 완료 메시지 출력
-  lcd.setCursor(0, 1);
-  lcd.print(WiFi.localIP());      // 할당된 IP 주소를 LCD에 출력
+  lcd.setCursor(0, 0);            // LCD 첫 줄 첫 번째 칸으로 커서 이동
+  lcd.print("WiFi 연결 완료");      // 연결 완료 메시지 출력
+  lcd.setCursor(0, 1);            // LCD 두 번째 줄 첫 번째 칸으로 커서 이동
+  lcd.print(WiFi.localIP());      // 현재 보드의 IP 주소 표시
   delay(2000);                    // 2초 대기 후 본 동작 시작
 }
 
@@ -50,20 +52,20 @@ void loop() {
 
   // 센서 오류일 경우 LCD에 에러 출력 후 5초 대기
   if (isnan(temp) || isnan(humi)) {
-    lcd.clear();
-    lcd.setCursor(0, 0);
+    lcd.clear();                  // LCD 화면 초기화
+    lcd.setCursor(0, 0);          // LCD 첫 줄 첫 번째 칸으로 커서 이동
     lcd.print("센서 오류");
-    delay(5000);
+    delay(5000);                  // 5초 대기 후 재시도
     return; // loop 재시작
   }
 
-  lcd.clear();                   // LCD 화면 지우기
-  lcd.setCursor(0, 0);           // 첫 번째 줄
+  lcd.clear();                   // LCD 화면 초기화
+  lcd.setCursor(0, 0);           // LCD 첫 줄 첫 번째 칸으로 커서 이동
   lcd.print("Temp: ");           // 온도 표시 시작
-  lcd.print(temp, 1);            // 온도 출력 (소수점 1자리)
+  lcd.print(temp, 1);            // 소수점 1자리 온도 표시
   lcd.print(" C");
 
-  lcd.setCursor(0, 1);           // 두 번째 줄
+  lcd.setCursor(0, 1);           // LCD 두 번째 줄 첫 번째 칸으로 커서 이동
   lcd.print("Humi: ");           // 습도 표시 시작
   lcd.print(humi, 1);            // 습도 출력 (소수점 1자리)
   lcd.print(" %");
