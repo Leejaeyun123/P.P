@@ -2,13 +2,20 @@
 #include <DHT.h>                // DHT 시리즈 센서를 제어하기 위한 라이브러리
 #include <LiquidCrystal_I2C.h>  // I2C 방식의 LCD (16x2 등)를 제어하기 위한 라이브러리
 #include <Wire.h>               // I2C 통신을 위한 기본 라이브러리
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
 
 #define DHTPIN D4               // DHT11 센서의 데이터 핀을 D4에 연결
 #define DHTTYPE DHT11           // 사용할 센서가 DHT11이라는 것을 명시
 
 DHT dht(DHTPIN, DHTTYPE);       // DHT 센서 객체를 생성
-
 LiquidCrystal_I2C lcd(0x27, 16, 2); // LCD 객체를 생성하며, 주소 0x27 (보통 기본값)이고 크기는 16x2 문자형
+
+// WiFi 설정
+const char* ssid = "turtle";         // <- 본인 WiFi 이름
+const char* password = "turtlebot3"; // <- 본인 WiFi 비밀번호
+
+ESP8266WebServer server(80);
 
 void setup() {                  // 아두이노가 처음 전원을 켜거나 리셋되었을 때 실행. 초기화 코드 (센서 설정, 시리얼 통신 시작, 핀모드 설정 등)를 이곳에 작성. 한 번만 실행되는 함수
   Serial.begin(115200);         // 시리얼 통신 시작 (115200bps로 PC와 아두이노 간 데이터 주고받기)
@@ -16,12 +23,43 @@ void setup() {                  // 아두이노가 처음 전원을 켜거나 �
 
   lcd.init();                   // I2C LCD 초기화 (LCD 사용 시작)
   lcd.backlight();              // LCD 백라이트 켜기 (글자 보기 위해)
-
   lcd.setCursor(0, 0);          // LCD 화면의 첫 번째 줄, 첫 번째 칸으로 커서 이동
   lcd.print("Init DHT11...");   // LCD에 초기화 메시지 출력
+
+  // WiFi 연결
+  WiFi.begin(ssid, password);
+  Serial.print("WiFi 연결 중");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+}
+Serial.println();
+Serial.println("WiFi 연결됨!");
+Serial.print("Local IP: ");
+Serial.println(WiFi.localIP());
+
+ // 웹서버 루트 요청 처리
+  server.on("/", []() {
+  float t = dht.readTemperature();
+  float h = dht.readHumidity();
+
+  if (isnan(t) || isnan(h)) {
+    server.send(500, "text/plain", "센서 읽기 실패");
+    return;
+  }
+
+  String response = "온도: " + String(t, 2) + " C\n";
+  response += "습도: " + String(h, 2) + " %";
+  server.send(200, "text/plain", response);
+  });
+
+  server.begin();   // 웹서버 시작
+  Serial.println("웹서버 시작됨!");
 }
 
 void loop() {                                   // 센서 값을 읽거나, 데이터를 처리하거나, 화면을 갱신하는 등의 지속적인 동작을 이곳에 작성. 계속 반복되는 함수
+  server.handleClient(); // 웹서버 클라이언트 요청 처리
+  
   float humidity = dht.readHumidity();          // 습도 측정 (0~100%)
   float temperature = dht.readTemperature();    // 온도 측정 (섭씨)
 
