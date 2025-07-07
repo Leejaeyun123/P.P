@@ -14,8 +14,8 @@ LiquidCrystal_I2C lcd(0x27, 16, 2); // LCD 객체 생성 (주소 0x27, 16문자 
 const char* ssid = "turtle";         // 연결할 WiFi SSID
 const char* password = "turtlebot3"; // 연결할 WiFi 비밀번호
 
-const char* server_ip = "192.168.0.100"; // TCP 서버의 IP 주소 (리눅스 PC)
-const uint16_t server_port = 8080;       // TCP 서버에서 열어둔 포트 번호
+const char* server_ip = "192.168.0.97"; // TCP 서버의 IP 주소 (리눅스 PC)
+const uint16_t server_port = 8889;       // TCP 서버에서 열어둔 포트 번호
 
 WiFiClient client;                 // TCP 연결을 위한 클라이언트 객체
 

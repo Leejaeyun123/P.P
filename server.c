@@ -5,7 +5,7 @@
 #include <arpa/inet.h>          // sockaddr_in 구조체 및 htons(), inet_ntoa() 함수 포함
 #include <sys/socket.h>         // 소켓 관련 함수 및 자료형
 
-#define PORT 8080               // 클라이언트가 연결할 포트 번호
+#define PORT 8889               // 클라이언트가 연결할 포트 번호
 #define BUFFER_SIZE 1024        // 수신 데이터 버퍼 크기
 
 int main() {
