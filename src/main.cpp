@@ -1,96 +1,81 @@
-#include <Arduino.h>            // 아두이노 기본 함수들 (예: pinMode, digitalWrite, delay)을 사용할 수 있음
-#include <DHT.h>                // DHT 시리즈 센서를 제어하기 위한 라이브러리
-#include <LiquidCrystal_I2C.h>  // I2C 방식의 LCD (16x2 등)를 제어하기 위한 라이브러리
-#include <Wire.h>               // I2C 통신을 위한 기본 라이브러리
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+#include <Arduino.h>              // 아두이노 프레임워크 기본 함수 사용을 위한 헤더
+#include <DHT.h>                  // 온습도 센서 DHT11을 제어하기 위한 라이브러리
+#include <Wire.h>                 // I2C 통신용 기본 라이브러리
+#include <LiquidCrystal_I2C.h>    // I2C 방식 LCD 제어를 위한 라이브러리
+#include <ESP8266WiFi.h>          // ESP8266 WiFi 연결을 위한 라이브러리
+#include <WiFiClient.h>           // TCP 클라이언트 소켓 통신을 위한 라이브러리
 
-#define DHTPIN D4               // DHT11 센서의 데이터 핀을 D4에 연결
-#define DHTTYPE DHT11           // 사용할 센서가 DHT11이라는 것을 명시
+#define DHTPIN D4                 // DHT11의 데이터 핀을 D4(GPIO2)에 연결
+#define DHTTYPE DHT11             // 사용할 DHT 센서 타입을 DHT11로 지정
 
-DHT dht(DHTPIN, DHTTYPE);       // DHT 센서 객체를 생성
-LiquidCrystal_I2C lcd(0x27, 16, 2); // LCD 객체를 생성하며, 주소 0x27 (보통 기본값)이고 크기는 16x2 문자형
+DHT dht(DHTPIN, DHTTYPE);         // DHT 객체 생성
+LiquidCrystal_I2C lcd(0x27, 16, 2); // LCD 객체 생성 (주소 0x27, 16문자 x 2줄 LCD)
 
-// WiFi 설정
-const char* ssid = "turtle";         // <- 본인 WiFi 이름
-const char* password = "turtlebot3"; // <- 본인 WiFi 비밀번호
+const char* ssid = "turtle";         // 연결할 WiFi SSID
+const char* password = "turtlebot3"; // 연결할 WiFi 비밀번호
 
-ESP8266WebServer server(80);
+const char* server_ip = "192.168.0.100"; // TCP 서버의 IP 주소 (리눅스 PC)
+const uint16_t server_port = 8080;       // TCP 서버에서 열어둔 포트 번호
 
-void setup() {                  // 아두이노가 처음 전원을 켜거나 리셋되었을 때 실행. 초기화 코드 (센서 설정, 시리얼 통신 시작, 핀모드 설정 등)를 이곳에 작성. 한 번만 실행되는 함수
-  Serial.begin(115200);         // 시리얼 통신 시작 (115200bps로 PC와 아두이노 간 데이터 주고받기)
-  dht.begin();                  // DHT11 센서 초기화 (센서가 동작하도록 준비)
+WiFiClient client;                 // TCP 연결을 위한 클라이언트 객체
 
-  lcd.init();                   // I2C LCD 초기화 (LCD 사용 시작)
-  lcd.backlight();              // LCD 백라이트 켜기 (글자 보기 위해)
-  lcd.setCursor(0, 0);          // LCD 화면의 첫 번째 줄, 첫 번째 칸으로 커서 이동
-  lcd.print("Init DHT11...");   // LCD에 초기화 메시지 출력
+void setup() {
+  Serial.begin(115200);           // 시리얼 통신 시작 (디버깅용)
+  dht.begin();                    // DHT11 센서 초기화
+  lcd.init();                     // I2C LCD 초기화
+  lcd.backlight();                // LCD 백라이트 켜기
 
-  // WiFi 연결
-  WiFi.begin(ssid, password);
-  Serial.print("WiFi 연결 중");
+  lcd.setCursor(0, 0);            // LCD 첫 줄 첫 번째 칸으로 커서 이동
+  lcd.print("WiFi 연결 중...");   // LCD에 WiFi 연결 메시지 출력
+
+  WiFi.begin(ssid, password);     // WiFi 연결 시작
+
+  // WiFi 연결될 때까지 반복 확인
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-}
-Serial.println();
-Serial.println("WiFi 연결됨!");
-Serial.print("Local IP: ");
-Serial.println(WiFi.localIP());
-
- // 웹서버 루트 요청 처리
-  server.on("/", []() {
-  float t = dht.readTemperature();
-  float h = dht.readHumidity();
-
-  if (isnan(t) || isnan(h)) {
-    server.send(500, "text/plain", "센서 읽기 실패");
-    return;
+    delay(500);                   // 0.5초 대기
+    Serial.print(".");            // 시리얼로 진행 상황 출력
   }
 
-  String response = "온도: " + String(t, 2) + " C\n";
-  response += "습도: " + String(h, 2) + " %";
-  server.send(200, "text/plain", response);
-  });
-
-  server.begin();   // 웹서버 시작
-  Serial.println("웹서버 시작됨!");
+  lcd.clear();                    // LCD 화면 초기화
+  lcd.setCursor(0, 0);
+  lcd.print("WiFi 연결 완료");    // 연결 완료 메시지 출력
+  lcd.setCursor(0, 1);
+  lcd.print(WiFi.localIP());      // 할당된 IP 주소를 LCD에 출력
+  delay(2000);                    // 2초 대기 후 본 동작 시작
 }
 
-void loop() {                                   // 센서 값을 읽거나, 데이터를 처리하거나, 화면을 갱신하는 등의 지속적인 동작을 이곳에 작성. 계속 반복되는 함수
-  server.handleClient(); // 웹서버 클라이언트 요청 처리
-  
-  float humidity = dht.readHumidity();          // 습도 측정 (0~100%)
-  float temperature = dht.readTemperature();    // 온도 측정 (섭씨)
+void loop() {
+  float temp = dht.readTemperature();  // 온도 측정
+  float humi = dht.readHumidity();     // 습도 측정
 
-  // 측정값이 비정상이면 (예: 센서 연결 실패 시)
-  if (isnan(humidity) || isnan(temperature)) {  
-    Serial.println("센서 읽기 실패!");           //  // PC 시리얼 모니터에 오류 메시지 출력
-    lcd.clear();                                // LCD 화면 지우기
-    lcd.setCursor(0, 0);                        // LCD 첫 번째 줄의 첫 번째 칸으로 커서를 이동
-    lcd.print("Sensor Error");                  // 에러 메시지 출력
-    delay(5000);                                // 5초 대기 (사용자에게 메시지 보이도록)
-    return;                                     // loop 끝내고 다시 반복
+  // 센서 오류일 경우 LCD에 에러 출력 후 5초 대기
+  if (isnan(temp) || isnan(humi)) {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("센서 오류");
+    delay(5000);
+    return; // loop 재시작
   }
 
-  // 시리얼 모니터 출력 (정상 상태)
-  Serial.print("온도: ");           // PC의 시리얼 모니터에 "온도: "라는 텍스트를 출력
-  Serial.print(temperature);        // 측정된 온도값(float)을 출력
-  Serial.print(" *C  |  습도: ");   // 단위 표시와 함께 습도 출력을 준비
-  Serial.print(humidity);           // 측정된 습도값(float)을 출력
-  Serial.println(" %");             // 습도의 단위 %를 출력하고 줄 바꿈. println()은 출력 후 자동 줄 바꿈이 포함
+  lcd.clear();                   // LCD 화면 지우기
+  lcd.setCursor(0, 0);           // 첫 번째 줄
+  lcd.print("Temp: ");           // 온도 표시 시작
+  lcd.print(temp, 1);            // 온도 출력 (소수점 1자리)
+  lcd.print(" C");
 
-  // LCD 출력 (화면에 현재 온도/습도 표시)
-  lcd.clear();            // LCD 화면의 모든 문자를 지우고 초기화
-  lcd.setCursor(0, 0);    // LCD 첫 번째 줄의 첫 번째 칸으로 커서를 이동
-  lcd.print("Temp: ");    // LCD에 "Temp: "라는 텍스트를 출력
-  lcd.print(temperature); // LCD에 측정된 온도(float 값)을 출력
-  lcd.print(" C");        // 온도 단위를 출력
+  lcd.setCursor(0, 1);           // 두 번째 줄
+  lcd.print("Humi: ");           // 습도 표시 시작
+  lcd.print(humi, 1);            // 습도 출력 (소수점 1자리)
+  lcd.print(" %");
 
-  lcd.setCursor(0, 1);      // LCD 두 번째 줄의 첫 번째 칸으로 커서를 이동
-  lcd.print("Humidity: ");  // "Humidity: " 텍스트를 출력
-  lcd.print(humidity);      // 측정된 습도(float 값)을 LCD에 출력
-  lcd.print(" %");          // 습도의 단위 %를 출력
+  // TCP 서버에 연결 시도
+  if (client.connect(server_ip, server_port)) {
+    String msg = "온도: " + String(temp, 2) + " C\n습도: " + String(humi, 2) + " %\n";
+    client.print(msg);          // 서버로 온습도 데이터 전송
+    client.stop();              // 전송 후 연결 종료
+  } else {
+    Serial.println("서버 연결 실패"); // 연결 실패 시 시리얼에 메시지 출력
+  }
 
-  delay(5000);              // 5초간 대기
+  delay(5000);                  // 5초 후 재측정 및 재전송
 }
