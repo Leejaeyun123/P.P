@@ -69,6 +69,3 @@ int main() {
     close(server_fd); // 서버 소켓 종료
     return 0;
 }
-
-
-dddd

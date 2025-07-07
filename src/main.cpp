@@ -79,5 +79,3 @@ void loop() {
 
   delay(5000);                  // 5초 후 재측정 및 재전송
 }
-
-dddddd
