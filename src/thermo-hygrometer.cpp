@@ -1,5 +1,7 @@
 // // ESP8266 클라이언트 코드 (온습도계)
 
+// // tcp 코드
+
 // #include <Arduino.h>              // 아두이노 프레임워크 기본 함수 사용을 위한 헤더
 // #include <DHT.h>                  // 온습도 센서 DHT11을 제어하기 위한 라이브러리
 // #include <Wire.h>                 // I2C 통신용 기본 라이브러리
@@ -81,3 +83,86 @@
 
 //   delay(5000);                  // 5초 후 재측정 및 재전송
 // }
+
+
+
+
+// // udp 코드
+
+// #include <Arduino.h>
+// #include <DHT.h>
+// #include <Wire.h>
+// #include <LiquidCrystal_I2C.h>
+// #include <ESP8266WiFi.h>
+// #include <WiFiUdp.h>  // UDP 통신용 라이브러리
+
+// #define DHTPIN D4
+// #define DHTTYPE DHT11
+
+// DHT dht(DHTPIN, DHTTYPE);
+// LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// const char* ssid = "turtle";
+// const char* password = "turtlebot3";
+
+// const char* server_ip = "192.168.0.97"; // 리눅스 서버 IP
+// const uint16_t server_port = 8889;      // UDP 서버 포트
+
+// WiFiUDP udp;  // UDP 통신 객체
+
+// void setup() {
+//   Serial.begin(115200);
+//   dht.begin();
+//   lcd.init();
+//   lcd.backlight();
+
+//   lcd.setCursor(0, 0);
+//   lcd.print("WiFi 연결 중...");
+//   WiFi.begin(ssid, password);
+
+//   while (WiFi.status() != WL_CONNECTED) {
+//     delay(500);
+//     Serial.print(".");
+//   }
+
+//   lcd.clear();
+//   lcd.setCursor(0, 0);
+//   lcd.print("WiFi 연결 완료");
+//   lcd.setCursor(0, 1);
+//   lcd.print(WiFi.localIP());
+//   delay(2000);
+
+//   udp.begin(12345);  // 클라이언트 UDP 포트 (임의 값)
+// }
+
+// void loop() {
+//   float temp = dht.readTemperature();
+//   float humi = dht.readHumidity();
+
+//   if (isnan(temp) || isnan(humi)) {
+//     lcd.clear();
+//     lcd.setCursor(0, 0);
+//     lcd.print("센서 오류");
+//     delay(5000);
+//     return;
+//   }
+
+//   lcd.clear();
+//   lcd.setCursor(0, 0);
+//   lcd.print("Temp: ");
+//   lcd.print(temp, 1);
+//   lcd.print(" C");
+
+//   lcd.setCursor(0, 1);
+//   lcd.print("Humi: ");
+//   lcd.print(humi, 1);
+//   lcd.print(" %");
+
+//   String msg = "온도: " + String(temp, 2) + " C\n습도: " + String(humi, 2) + " %\n";
+//   udp.beginPacket(server_ip, server_port);
+//   udp.print(msg);
+//   udp.endPacket();
+
+//   delay(5000);  // 5초마다 측정 및 전송
+// }
+

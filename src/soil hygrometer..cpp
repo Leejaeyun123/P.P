@@ -12,7 +12,8 @@
 
 // // UDP 서버 정보
 // const char* server_ip = "192.168.0.97";    // 수신할 서버 IP (예: Ubuntu PC)
-// const unsigned int server_port = 8890;     // 수신할 포트
+// const unsigned int server_port = 8889;     // 수신할 포트
+// int moisture = 0; //초기화
 
 // WiFiUDP udp;                               // UDP 객체
 // LiquidCrystal_I2C lcd(0x27, 16, 2);        // LCD 객체 생성 (주소 0x27, 16x2)
@@ -30,24 +31,27 @@
 //   WiFi.begin(ssid, password);     // WiFi 연결 시도
 //   while (WiFi.status() != WL_CONNECTED) {
 //     delay(500);
-//     Serial.print(".\n");
+//     Serial.print(".");
 //   }
+//   Serial.print(".\n");
 
 //   lcd.clear();
 //   lcd.setCursor(0, 0);
 //   lcd.setCursor(0, 1);
 //   lcd.print(WiFi.localIP());
-  
 //   delay(2000); // 연결 메시지 잠시 보여줌
 // }
 
 // // 주 반복 동작
 // void loop() {
-//   int moisture = analogRead(A0);  // 토양 수분 측정
+//   moisture = analogRead(A0);  // 토양 수분 측정
+//   int soilper = map(moisture, 170, 1023, 100, 0);
 
 //   // 시리얼 출력
 //   Serial.print("토양 수분 값: ");
-//   Serial.println(moisture);
+//   Serial.print(moisture);
+//   Serial.print(", test: ");
+//   Serial.println(soilper);
 
 //   // LCD 출력
 //   lcd.clear();
