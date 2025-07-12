@@ -45,13 +45,13 @@
 // // 주 반복 동작
 // void loop() {
 //   moisture = analogRead(A0);  // 토양 수분 측정
-//   int soilper = map(moisture, 170, 1023, 100, 0);
+//   // int soilper = map(moisture, 170, 1023, 100, 0); //
 
 //   // 시리얼 출력
 //   Serial.print("토양 수분 값: ");
-//   Serial.print(moisture);
-//   Serial.print(", test: ");
-//   Serial.println(soilper);
+//   Serial.println(moisture);
+//   // Serial.print(", test: "); //
+//   // Serial.println(soilper); //
 
 //   // LCD 출력
 //   lcd.clear();
