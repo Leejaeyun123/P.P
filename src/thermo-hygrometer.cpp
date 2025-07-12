@@ -74,7 +74,7 @@
 
 //   // TCP 서버에 연결 시도
 //   if (client.connect(server_ip, server_port)) {
-//     String msg = "온도: " + String(temp, 2) + " C\n습도: " + String(humi, 2) + " %\n";  // 전송 문자열 생성
+//     String msg = "온도: " + String(temp, 2) + " C / 습도: " + String(humi, 2) + " %";  // 전송 문자열 생성
 //     client.print(msg);          // 서버로 온습도 데이터 전송
 //     client.stop();              // 전송 후 연결 종료
 //   } else {
@@ -158,7 +158,7 @@
 //   lcd.print(humi, 1);
 //   lcd.print(" %");
 
-//   String msg = "온도: " + String(temp, 2) + " C\n습도: " + String(humi, 2) + " %\n";
+//   String msg = "온도: " + String(temp, 2) + " C / 습도: " + String(humi, 2) + " %";
 //   udp.beginPacket(server_ip, server_port);
 //   udp.print(msg);
 //   udp.endPacket();
