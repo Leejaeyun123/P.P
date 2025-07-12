@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS sensor;
+USE sensor;
+
 CREATE TABLE IF NOT EXISTS sensor_log (
     id INT AUTO_INCREMENT PRIMARY KEY,       -- 고유 ID
     device_ip VARCHAR(45) NOT NULL,          -- ESP8266의 IP 주소
