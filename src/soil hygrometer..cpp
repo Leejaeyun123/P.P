@@ -8,7 +8,7 @@
 
 // // WiFi 정보
 // const char* ssid = "";         // 연결할 WiFi 이름
-// const char* password = ""; // WiFi 비밀번호
+// const char* password = "";     // WiFi 비밀번호
 
 // // UDP 서버 정보
 // const char* server_ip = "xxx.xxx.x.xx";    // 데이터를 받을 서버 IP (예: Ubuntu PC)
