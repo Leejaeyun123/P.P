@@ -11,8 +11,8 @@
 // const char* password = ""; // WiFi 비밀번호
 
 // // UDP 서버 정보
-// const char* server_ip = "xxx.xxx.x.xx";    // 데이터를 보낼 서버 IP (예: Ubuntu PC)
-// const unsigned int server_port = 8889;     // 서버에서 열어둔 포트 번호
+// const char* server_ip = "xxx.xxx.x.xx";    // 데이터를 받을 서버 IP (예: Ubuntu PC)
+// const unsigned int server_port = 8889;     // 서버에서 데이터 수신을 위해 열어둔 포트 번호
 // int moisture = 0;                          // 토양 수분값 저장 변수, 0으로 초기화
 
 // WiFiUDP udp;                               // UDP 통신을 위한 WiFiUDP 객체 생성
