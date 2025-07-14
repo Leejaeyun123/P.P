@@ -39,7 +39,6 @@
 //     delay(500);                   // 0.5초 대기
 //     Serial.print(".");            // 연결 대기 상태를 점(.)으로 표시
 //   }
-//   // Serial.print(".\n");            // 연결 완료 후 줄바꿈
 
 //   lcd.clear();                    // LCD 화면 초기화
 //   lcd.setCursor(0, 0);            // LCD 첫 번째 줄 첫 번째 칸으로 커서 이동
@@ -128,7 +127,6 @@
 //     delay(500);                   // 0.5초 대기
 //     Serial.print(".");            // 연결 대기 상태를 점(.)으로 표시
 //   }
-//   // Serial.print(".\n");            // 연결 완료 후 줄바꿈
 
 //   lcd.clear();                    // LCD 화면 초기화
 //   lcd.setCursor(0, 0);            // LCD 첫 번째 줄 첫 번째 칸으로 커서 이동
